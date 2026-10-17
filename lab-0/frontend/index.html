@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Список задач</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Список задач</h1>
+
+    <!-- Форма добавления задачи -->
+    <form id="task-form">
+      <input id="task-input" type="text" maxlength="500" placeholder="Что нужно сделать?" autocomplete="off">
+      <button type="submit">Добавить</button>
+    </form>
+    <p id="message" class="message"></p>
+
+    <!-- Список задач, заполняется из script.js -->
+    <ul id="task-list"></ul>
+
+    <footer>Ответил экземпляр: <span id="instance">—</span></footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
