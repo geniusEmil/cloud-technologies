@@ -1,4 +1,5 @@
 import os
+from contextlib import closing
 from pathlib import Path
 
 import psycopg2
@@ -42,7 +43,7 @@ table_ready = False
 def init_db():
     # Создаём таблицу, если её ещё нет
     global table_ready
-    with get_connection() as conn, conn.cursor() as cur:
+    with closing(get_connection()) as conn, conn, conn.cursor() as cur:
         cur.execute(
             """
             CREATE TABLE IF NOT EXISTS tasks (
@@ -52,7 +53,6 @@ def init_db():
             )
             """
         )
-    conn.close()
     table_ready = True
 
 
@@ -90,10 +90,8 @@ def db_error(exc):
 def health():
     # Проверяем, что БД отвечает на простой запрос
     try:
-        conn = get_connection()
-        with conn.cursor() as cur:
+        with closing(get_connection()) as conn, conn.cursor() as cur:
             cur.execute("SELECT 1")
-        conn.close()
     except psycopg2.Error:
         return jsonify({"status": "error", "db": "unavailable", "instance_id": INSTANCE_ID}), 503
     return jsonify({"status": "ok", "db": "ok", "instance_id": INSTANCE_ID})
@@ -102,11 +100,9 @@ def health():
 @app.get("/api/tasks")
 def list_tasks():
     ensure_table()
-    conn = get_connection()
-    with conn.cursor() as cur:
+    with closing(get_connection()) as conn, conn.cursor() as cur:
         cur.execute("SELECT id, text, created_at FROM tasks ORDER BY id DESC")
         rows = cur.fetchall()
-    conn.close()
     tasks = [
         {"id": r[0], "text": r[1], "created_at": r[2].isoformat()} for r in rows
     ]
@@ -127,14 +123,12 @@ def create_task():
         return error(f"task text is longer than {MAX_TEXT_LENGTH} characters", 400)
 
     ensure_table()
-    conn = get_connection()
-    with conn, conn.cursor() as cur:
+    with closing(get_connection()) as conn, conn, conn.cursor() as cur:
         cur.execute(
             "INSERT INTO tasks (text) VALUES (%s) RETURNING id, created_at",
             (text,),
         )
         task_id, created_at = cur.fetchone()
-    conn.close()
     task = {"id": task_id, "text": text, "created_at": created_at.isoformat()}
     return jsonify({"task": task, "instance_id": INSTANCE_ID}), 201
 
@@ -142,11 +136,9 @@ def create_task():
 @app.delete("/api/tasks/<int:task_id>")
 def delete_task(task_id):
     ensure_table()
-    conn = get_connection()
-    with conn, conn.cursor() as cur:
+    with closing(get_connection()) as conn, conn, conn.cursor() as cur:
         cur.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
         deleted = cur.rowcount
-    conn.close()
     if deleted == 0:
         return error("task not found", 404)
     return jsonify({"deleted": task_id, "instance_id": INSTANCE_ID})
