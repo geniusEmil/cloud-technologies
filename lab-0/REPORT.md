@@ -1,5 +1,7 @@
 # Отчёт по лабораторной 0
 
+Репозиторий с кодом: [vergjs/cloud-technologies](https://github.com/vergjs/cloud-technologies).
+
 ## Что сделано
 
 - **Бэкенд** (`backend/app.py`): Flask + psycopg2. Эндпоинты `GET /api/tasks`, `POST /api/tasks`, `DELETE /api/tasks/<id>`, `GET /health`. Таблица `tasks` создаётся при старте через `CREATE TABLE IF NOT EXISTS`; если БД при старте была недоступна, таблица создаётся при первом запросе.
