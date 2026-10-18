@@ -2,12 +2,12 @@
 
 ## Что сделано
 
-- **Бэкенд** (`backend/app.py`): Flask + psycopg2. Эндпоинты `GET /api/tasks`, `POST /api/tasks`, `GET /health`. Таблица `tasks` создаётся при старте через `CREATE TABLE IF NOT EXISTS`; если БД при старте была недоступна, таблица создаётся при первом запросе.
-- **Фронтенд** (`frontend/`): одна страница с формой и списком, запросы через `fetch` на относительный `/api/tasks`. Внизу страницы показано, какой экземпляр бэкенда ответил.
+- **Бэкенд** (`backend/app.py`): Flask + psycopg2. Эндпоинты `GET /api/tasks`, `POST /api/tasks`, `DELETE /api/tasks/<id>`, `GET /health`. Таблица `tasks` создаётся при старте через `CREATE TABLE IF NOT EXISTS`; если БД при старте была недоступна, таблица создаётся при первом запросе.
+- **Фронтенд** (`frontend/`): одна страница с формой и списком, у каждой задачи кнопка удаления «×», запросы через `fetch` на относительный `/api/tasks`. Внизу страницы показано, какой экземпляр бэкенда ответил.
 - **БД**: PostgreSQL 16 (Homebrew) как отдельный сервис на `localhost:5432`, пользователь и база `todo`. Пароль хранится только в локальном `lab-0/.env`, который исключён из git.
 - Конфигурация только через переменные окружения (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `PORT`, `INSTANCE_ID`), бэкенд слушает `0.0.0.0:$PORT`.
 - Каждый ответ содержит `instance_id` в JSON и заголовок `X-Instance-Id`.
-- Ошибки: пустая задача и не-JSON → `400`, неизвестный путь → `404`, БД недоступна → `503`, всё в JSON.
+- Ошибки: пустая задача и не-JSON → `400`, неизвестный путь или удаление несуществующей задачи → `404`, БД недоступна → `503`, всё в JSON.
 
 ## Как запустить
 
@@ -71,6 +71,38 @@ Content-Length: 82
 X-Instance-Id: backend-1
 
 {"error":"expected JSON body like {\"text\": \"...\"}","instance_id":"backend-1"}
+```
+
+## Удаление задачи
+
+Задача создана через `POST`, затем удалена; повторное удаление той же задачи даёт 404. Если вместо номера передать не число, Flask не находит подходящий маршрут и отвечает 405 (тоже JSON).
+
+```text
+$ curl -s -i -X DELETE http://localhost:8002/api/tasks/6
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 43
+X-Instance-Id: backend-test
+
+{"deleted":6,"instance_id":"backend-test"}
+
+
+$ curl -s -i -X DELETE http://localhost:8002/api/tasks/6
+HTTP/1.1 404 NOT FOUND
+Content-Type: application/json
+Content-Length: 56
+X-Instance-Id: backend-test
+
+{"error":"task not found","instance_id":"backend-test"}
+
+
+$ curl -s -i -X DELETE http://localhost:8002/api/tasks/abc
+HTTP/1.1 405 METHOD NOT ALLOWED
+Content-Type: application/json
+Content-Length: 60
+X-Instance-Id: backend-test
+
+{"error":"method not allowed","instance_id":"backend-test"}
 ```
 
 ## Сохранение после перезапуска бэкенда
@@ -189,17 +221,22 @@ $ psql -h localhost -U todo -d todo -c '\d tasks' -c 'SELECT id, text FROM tasks
 
 ## Скриншоты
 
-Сделаны автоматически через Playwright (headless Chromium): страница открыта, задача добавлена через форму, затем страница перезагружена.
+Сделаны автоматически через Playwright (headless Chromium): страница открыта, задача добавлена через форму, затем страница перезагружена. Для проверки удаления добавлена задача и удалена кнопкой «×»: после перезагрузки она не вернулась.
 
 | После добавления | После перезагрузки |
 |---|---|
 | ![после добавления](docs/screenshots/01-after-add.png) | ![после перезагрузки](docs/screenshots/02-after-reload.png) |
+
+Первые два скриншота сделаны до появления кнопки удаления.
+
+![после удаления](docs/screenshots/03-after-delete.png)
 
 ## Что проверено
 
 - [x] `GET /health` → 200 при работающей БД, 503 при остановленной
 - [x] `POST /api/tasks` → 201, задача записана в PostgreSQL
 - [x] `GET /api/tasks` → 200, новые задачи сверху
+- [x] `DELETE /api/tasks/<id>` → 200, повторно → 404; кнопка «×» на странице удаляет задачу
 - [x] пустая задача и тело не в JSON → 400 с понятным сообщением
 - [x] БД недоступна → 503 вместо падения, после запуска БД всё снова работает
 - [x] `instance_id` в JSON и `X-Instance-Id` в заголовках

@@ -139,6 +139,19 @@ def create_task():
     return jsonify({"task": task, "instance_id": INSTANCE_ID}), 201
 
 
+@app.delete("/api/tasks/<int:task_id>")
+def delete_task(task_id):
+    ensure_table()
+    conn = get_connection()
+    with conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+        deleted = cur.rowcount
+    conn.close()
+    if deleted == 0:
+        return error("task not found", 404)
+    return jsonify({"deleted": task_id, "instance_id": INSTANCE_ID})
+
+
 @app.errorhandler(404)
 def not_found(exc):
     return error("not found", 404)

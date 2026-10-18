@@ -69,10 +69,28 @@ li {
   border-bottom: 1px solid #eee;
 }
 
+li span {
+  flex: 1;
+}
+
 li time {
   font-size: 12px;
   color: #888;
   white-space: nowrap;
+}
+
+/* Кнопка удаления задачи */
+li button.delete {
+  padding: 0 8px;
+  font-size: 18px;
+  line-height: 1;
+  background: none;
+  color: #aaa;
+}
+
+li button.delete:hover {
+  background: none;
+  color: #c0392b;
 }
 
 li.empty {

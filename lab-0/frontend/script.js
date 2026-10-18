@@ -32,7 +32,12 @@ function renderTasks(tasks) {
     text.textContent = task.text; // textContent защищает от HTML-инъекций
     const date = document.createElement("time");
     date.textContent = new Date(task.created_at).toLocaleString("ru-RU");
-    li.append(text, date);
+    const del = document.createElement("button");
+    del.className = "delete";
+    del.title = "Удалить задачу";
+    del.textContent = "×";
+    del.addEventListener("click", () => deleteTask(task.id));
+    li.append(text, date, del);
     list.appendChild(li);
   }
 }
@@ -47,6 +52,22 @@ async function loadTasks() {
       return;
     }
     renderTasks(data.tasks);
+  } catch (err) {
+    showMessage("Сервер недоступен", true);
+  }
+}
+
+async function deleteTask(id) {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const data = await response.json();
+    updateInstance(response, data);
+    if (!response.ok) {
+      showMessage("Ошибка удаления: " + data.error, true);
+      return;
+    }
+    showMessage("Задача удалена", false);
+    await loadTasks();
   } catch (err) {
     showMessage("Сервер недоступен", true);
   }
