@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Командная полка</title>
+  <style>
+    :root { color-scheme: light; --background: #EDF3FA; --surface: #FFF; --text: #182C49; --accent: #386455; --border: #D2DEEB; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--text); font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 16px; line-height: 1.65; }
+    .site-header { display: flex; align-items: center; gap: 12px; max-width: 1120px; margin: 0 auto; padding: 28px 0; border-bottom: 1px solid var(--border); font-size: 20px; font-weight: 650; letter-spacing: -.025em; }
+    .project-mark { width: 32px; height: 32px; display: grid; place-items: center; color: var(--accent); }
+    .project-mark svg { width: 30px; height: 30px; }
+    main { width: min(920px, calc(100% - 56px)); margin: 64px auto 72px; padding: 44px 48px; background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--accent); border-radius: 4px 4px 16px 16px; }
+    h1 { margin: 0 0 20px; max-width: 650px; font-size: clamp(32px, 4vw, 40px); font-weight: 650; letter-spacing: -.04em; line-height: 1.18; }
+    .intro { margin: 0; max-width: 560px; font-size: 18px; color: rgb(24 44 73 / .75); }
+    .resources { padding: 0; margin: 32px 0 0; list-style: none; }
+    .resources li + li { border-top: 1px solid var(--border); }
+    .resources a { display: block; padding: 18px 0; color: var(--accent); font-size: 18px; font-weight: 600; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+    .resources span { display: block; margin-top: 3px; color: rgb(24 44 73 / .7); font-size: 14px; font-weight: 400; }
+    a:focus-visible { outline: 3px solid #7cacf0; outline-offset: 4px; }
+    .address { display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: baseline; padding-top: 28px; margin: 36px 0 0; border-top: 1px solid var(--border); }
+    dt { font-size: 14px; color: rgb(24 44 73 / .7); }
+    dd { margin: 0; color: var(--accent); font-size: 20px; font-weight: 600; overflow-wrap: anywhere; }
+    @media (max-width: 1180px) { .site-header { margin: 0 28px; } }
+    @media (max-width: 640px) { .site-header { margin: 0 20px; padding: 20px 0; font-size: 18px; } main { width: calc(100% - 32px); margin: 28px auto 40px; padding: 28px 24px; } .intro { font-size: 16px; } .address { display: block; margin-top: 28px; } dd { margin-top: 8px; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <span class="project-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M5 26h22M8 24V8h5v16M17 24V5h5v19M25 24l-3-13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    Командная полка
+  </header>
+  <main id="lab1-other">
+    <h1>Материалы команды</h1>
+    <p class="intro">Код лабораторных и задания курса в одном месте.</p>
+    <ul class="resources">
+      <li><a href="https://github.com/vergjs/cloud-technologies">Репозиторий лабораторных<span>Код, инструкции запуска и отчёты</span></a></li>
+      <li><a href="https://docs.google.com/document/d/19LNpEpXeLxTAPDgKczQPlA44Lc7e9Tgt/edit">Задания курса<span>Требования к каждой работе</span></a></li>
+    </ul>
+    <dl class="address">
+      <dt>Адрес сайта</dt>
+      <dd>other.localhost</dd>
+    </dl>
+  </main>
+</body>
+</html>

@@ -3,25 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Список задач</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#edf3fa">
+  <title>По делу</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <main class="container">
-    <h1>Список задач</h1>
-
-    <!-- Форма добавления задачи -->
-    <form id="task-form">
-      <input id="task-input" type="text" maxlength="500" placeholder="Что нужно сделать?" autocomplete="off">
-      <button type="submit">Добавить</button>
-    </form>
-    <p id="message" class="message"></p>
-
-    <!-- Список задач, заполняется из script.js -->
-    <ul id="task-list"></ul>
-
-    <footer>Ответил экземпляр: <span id="instance">—</span></footer>
-  </main>
-  <script src="script.js"></script>
+  <a class="skip-link" href="#main">Перейти к задачам</a>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="По делу, главная">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h10M7 12h7M7 17h10"/></svg></span>
+        <span>По делу</span>
+      </a>
+      <nav aria-label="Основная навигация">
+        <a href="/" aria-current="page">Задачи</a>
+        <a href="/docs/" data-lab-page hidden>Помощь</a>
+        <a href="/admin" data-lab-page hidden>Доступ</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="page-heading">
+        <h1>Задачи команды</h1>
+        <p>Добавляйте задачи и убирайте выполненное.</p>
+      </div>
+      <div class="workspace">
+        <section class="composer" aria-labelledby="composer-title">
+          <h2 id="composer-title">Новая задача</h2>
+          <form id="task-form">
+            <label for="task-input">Что нужно сделать</label>
+            <textarea id="task-input" rows="4" maxlength="500" placeholder="Например, проверить балансировку" aria-describedby="input-hint" required></textarea>
+            <p class="field-hint" id="input-hint">До 500 символов</p>
+            <button class="primary-button" id="add-task" type="submit">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>
+              <span id="add-task-label">Добавить задачу</span>
+            </button>
+          </form>
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+          <div class="composer-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8l3 3v13H5V4h3Zm7 0v5h4M8 13h8M8 16h5"/></svg>
+            <p>Список общий для команды.<br>Записи сохраняются при обновлении страницы.</p>
+          </div>
+        </section>
+        <section class="task-panel" aria-labelledby="list-title">
+          <div class="list-heading">
+            <div>
+              <h2 id="list-title">В списке <span id="task-count"></span></h2>
+              <p>Сначала новые</p>
+            </div>
+            <button class="refresh-button" id="reload-tasks" type="button" aria-label="Обновить список">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 8a6 6 0 1 0 0 4M16 3v5h-5"/></svg>
+              <span>Обновить</span>
+            </button>
+          </div>
+          <ul id="task-list" aria-busy="true">
+            <li class="empty-state"><p>Загружаем задачи…</p></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <span>По делу</span>
+      <div class="connection" id="connection" data-state="loading">
+        <span class="connection-dot" aria-hidden="true"></span>
+        <span id="connection-label">Подключаемся</span>
+        <span class="instance-label">Сервер <strong id="instance">…</strong></span>
+      </div>
+    </footer>
+  </div>
+  <script src="/script.js"></script>
 </body>
 </html>

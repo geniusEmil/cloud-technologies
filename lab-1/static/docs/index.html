@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>По делу. Помощь</title>
+  <style>
+    :root { color-scheme: light; --background: #EDF3FA; --surface: #FFF; --text: #182C49; --action: #245DB5; --border: #D2DEEB; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--background); color: var(--text); font-family: "Avenir Next", "Segoe UI", sans-serif; font-size: 16px; line-height: 1.65; }
+    a { color: var(--action); text-underline-offset: 4px; }
+    a:focus-visible { outline: 3px solid var(--action); outline-offset: 5px; border-radius: 4px; }
+    .site-header { max-width: 1120px; margin: 0 auto; padding: 28px 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--border); }
+    .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; font-size: 22px; font-weight: 700; letter-spacing: -.035em; white-space: nowrap; }
+    .brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--action); display: grid; place-items: center; }
+    .brand-mark svg { width: 20px; height: 20px; }
+    nav { display: flex; align-items: center; gap: 28px; }
+    nav a { color: var(--text); font-size: 14px; font-weight: 600; text-decoration: none; padding: 6px 0; }
+    nav a:hover { color: var(--action); }
+    nav a[aria-current="page"] { color: var(--action); box-shadow: 0 2px var(--action); }
+    main { width: min(920px, calc(100% - 56px)); margin: 56px auto 72px; padding: 44px 48px 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; }
+    h1 { margin: 0 0 18px; max-width: 650px; font-size: clamp(32px, 4vw, 40px); font-weight: 650; letter-spacing: -.04em; line-height: 1.18; }
+    .intro { margin: 0; max-width: 590px; color: rgb(24 44 73 / .75); font-size: 18px; line-height: 1.65; }
+    .guide { margin: 36px 0 28px; }
+    .guide-section { display: grid; grid-template-columns: 190px 1fr; column-gap: 32px; padding: 26px 0; border-top: 1px solid var(--border); }
+    dt { margin: 0; font-size: 17px; font-weight: 650; line-height: 1.6; }
+    dd { margin: 0; color: rgb(24 44 73 / .8); }
+    .note { margin: 0 0 28px; padding-left: 18px; border-left: 3px solid var(--border); color: rgb(24 44 73 / .75); font-size: 14px; }
+    .primary-link { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 10px 20px; border-radius: 9px; background: var(--action); color: var(--surface); font-weight: 600; text-decoration: none; }
+    .primary-link:hover { background: #1E509D; }
+    @media (max-width: 1180px) { .site-header { margin: 0 28px; } }
+    @media (max-width: 640px) { .site-header { margin: 0 20px; padding: 20px 0; flex-wrap: wrap; gap: 18px; } nav { width: 100%; gap: 28px; } main { width: calc(100% - 32px); margin: 28px auto 40px; padding: 28px 24px; border-radius: 14px; } .guide-section { grid-template-columns: 1fr; row-gap: 10px; padding: 22px 0; } .intro { font-size: 16px; } .guide { margin-top: 28px; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="По делу, список задач">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="M5 5h10M5 10h10M5 15h7" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></span>
+      По делу
+    </a>
+    <nav aria-label="Основная навигация">
+      <a href="/">Задачи</a>
+      <a href="/docs/" aria-current="page">Помощь</a>
+      <a href="/admin">Доступ</a>
+    </nav>
+  </header>
+  <main id="lab1-docs">
+    <h1>Как пользоваться списком</h1>
+    <p class="intro">Добавляйте дела, возвращайтесь к ним позже и удаляйте выполненное.</p>
+    <dl class="guide">
+      <div class="guide-section">
+        <dt>Добавить задачу</dt>
+        <dd>На странице «Задачи» введите текст и нажмите «Добавить задачу». Новая запись появится в начале списка.</dd>
+      </div>
+      <div class="guide-section">
+        <dt>Посмотреть список</dt>
+        <dd>Задачи загружаются при открытии страницы и сохраняются после её обновления или перезапуска приложения.</dd>
+      </div>
+      <div class="guide-section">
+        <dt>Удалить задачу</dt>
+        <dd>Нажмите кнопку удаления рядом с записью, чтобы убрать её из списка. Удалённую задачу восстановить нельзя.</dd>
+      </div>
+    </dl>
+    <p class="note">Изменения общего списка видны всем посетителям.</p>
+    <a class="primary-link" href="/">Открыть задачи</a>
+  </main>
+</body>
+</html>

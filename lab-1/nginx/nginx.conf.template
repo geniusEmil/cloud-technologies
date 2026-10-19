@@ -1,0 +1,132 @@
+user @WORKER_USER@ @WORKER_GROUP@;
+worker_processes 1;
+pid "@LAB_DIR@/.run/nginx.pid";
+error_log "@LAB_DIR@/.run/error.log";
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    types {
+        text/html html;
+        text/css css;
+        application/javascript js;
+    }
+    default_type application/octet-stream;
+    charset utf-8;
+    index index.html;
+
+    access_log "@LAB_DIR@/.run/access.log";
+    client_body_temp_path "@LAB_DIR@/.run/client_temp";
+    proxy_temp_path "@LAB_DIR@/.run/proxy_temp";
+    fastcgi_temp_path "@LAB_DIR@/.run/fastcgi_temp";
+    uwsgi_temp_path "@LAB_DIR@/.run/uwsgi_temp";
+    scgi_temp_path "@LAB_DIR@/.run/scgi_temp";
+
+    ssl_certificate "@LAB_DIR@/.run/tls/server.crt";
+    ssl_certificate_key "@LAB_DIR@/.run/tls/server.key";
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    limit_req_zone $binary_remote_addr zone=api_per_ip:10m rate=5r/s;
+    limit_req_status 429;
+
+    # Без специального метода балансировки nginx использует round robin.
+    upstream todo_backends {
+        server 127.0.0.1:@BACKEND1_PORT@ max_fails=1 fail_timeout=5s;
+        server 127.0.0.1:@BACKEND2_PORT@ max_fails=1 fail_timeout=5s;
+    }
+
+    # Неизвестные домены не попадают ни в один из двух проектов.
+    server {
+        listen 127.0.0.1:@HTTP_PORT@ default_server;
+        listen 127.0.0.1:@HTTPS_PORT@ ssl default_server;
+        server_name _;
+
+        error_page 404 /404.html;
+        location = /404.html {
+            internal;
+            alias "@LAB_DIR@/static/errors/404.html";
+        }
+        location / {
+            return 404;
+        }
+    }
+
+    server {
+        listen 127.0.0.1:@HTTP_PORT@;
+        server_name todo.localhost other.localhost;
+        return 301 https://$host@HTTPS_SUFFIX@$request_uri;
+    }
+
+    server {
+        listen 127.0.0.1:@HTTPS_PORT@ ssl;
+        server_name todo.localhost;
+        root "@REPO_DIR@/lab-0/frontend";
+
+        error_page 404 /404.html;
+        location = /404.html {
+            internal;
+            alias "@LAB_DIR@/static/errors/404.html";
+        }
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 1s;
+        proxy_read_timeout 5s;
+        proxy_send_timeout 5s;
+        proxy_next_upstream error timeout http_502 http_503 http_504;
+        proxy_next_upstream_tries 2;
+
+        # URI сохраняется: /api/tasks попадает в Flask как /api/tasks.
+        location = /api {
+            limit_req zone=api_per_ip burst=10 nodelay;
+            proxy_pass http://todo_backends;
+        }
+        location ^~ /api/ {
+            limit_req zone=api_per_ip burst=10 nodelay;
+            proxy_pass http://todo_backends;
+        }
+
+        location = /docs {
+            return 301 /docs/;
+        }
+        location /docs/ {
+            alias "@LAB_DIR@/static/docs/";
+        }
+
+        # Без return: проверка пароля выполняется до отдачи файла.
+        location = /admin {
+            auth_basic "Lab 1 admin";
+            auth_basic_user_file "@LAB_DIR@/.run/htpasswd";
+            default_type text/html;
+            alias "@LAB_DIR@/static/admin/index.html";
+        }
+        location /admin/ {
+            auth_basic "Lab 1 admin";
+            auth_basic_user_file "@LAB_DIR@/.run/htpasswd";
+            alias "@LAB_DIR@/static/admin/";
+        }
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+
+    server {
+        listen 127.0.0.1:@HTTPS_PORT@ ssl;
+        server_name other.localhost;
+        root "@LAB_DIR@/static/other";
+
+        error_page 404 /404.html;
+        location = /404.html {
+            internal;
+            alias "@LAB_DIR@/static/errors/404.html";
+        }
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}
